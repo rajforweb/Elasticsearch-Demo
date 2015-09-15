@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body>
+
+
+    <div style="background-color:#000000;">
+        <h2 style="background-color:#000000; color:white;padding-left:300px;">Elastic Search Demo</h2>
+    </div>
+    <div class="navbar navbar-default">
+
+        <div>
+            <ul class="nav navbar-nav">
+                <li class="active" style="padding-left:300px;">@Html.ActionLink("Home", "Index", "Home")</li>
+                <li>@Html.ActionLink("Books", "Index", "Books")</li>
+                <li>@Html.ActionLink("Create New", "Create","Books")</li>
+            </ul>
+
+
+            @*@using (Html.BeginForm("Search", "Home", FormMethod.Get,new {@class = "navbar-form navbar-left"}))
+                {
+                    <div class="form-group">
+                        <input class="form-control" type="text" placeholder="Search" name="query" />
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                }*@
+
+
+
+        </div>
+
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            @*<p>&copy; @DateTime.Now.Year - Elasticsearch, Nest, ASP.NET Application</p>*@
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

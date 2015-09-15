@@ -1,0 +1,101 @@
+﻿@model Library.Web.ViewModels.SearchViewModel
+@{
+    ViewBag.Title = "Elasticsearch";
+}
+
+
+
+<div>
+    @using (Html.BeginForm("Search", "Home", FormMethod.Get, new { @class = "navbar-form navbar-left" }))
+    {
+        <div class="form-group">
+            <input class="form-control" type="text" placeholder="Search" name="query" />
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+    }
+</div>
+<br></br>
+
+@if (Model == null)
+{
+    return;
+}
+<div style="margin-top: 30px;">
+    @if (Model.Suggestions.Any(x => x.Key == "did-you-mean"))
+    {
+        <span>Did you mean: </span>
+        foreach (var suggestions in Model.Suggestions["did-you-mean"])
+        {
+            var count = 0;
+            foreach (var suggestion in suggestions.Options)
+            {
+                <a href="/Home/Search?query=@suggestion.Text"><strong>@suggestion.Text </strong>&emsp;</a>
+                count++;
+            }
+            if (count == 0)
+            {
+                <span class="alert-danger">There is no suggestion</span>
+            }
+
+        }
+    }
+</div>
+
+<h3><strong>Results for:</strong> @Model.Query</h3>
+
+@if (Model != null)
+{
+    <table class="table table-condensed">
+        <thead>
+            <tr><th>Search Time</th><th>Title</th><th>Content</th><th>Author</th></tr>
+        </thead>
+
+        <tbody>
+            @foreach (var result in Model.Results)
+            {
+                <tr>
+                    <td>@result.Score</td>
+                    <td>
+                        <a href="/Books/Details/@result.Id">
+                            @if (result.Highlights != null && result.Highlights.Any(x => x.Key == "title"))
+                            {
+                                var hl = result.Highlights.FirstOrDefault(x => x.Key == "title");
+                                foreach (var h in hl.Value.Highlights)
+                                {
+                                    WriteLiteral(h);
+                                }
+                            }
+                            else
+                            {
+                                WriteLiteral(result.Source.Title);
+                            }
+                        </a>
+                    </td>
+
+                    <td>
+                        @if (result.Highlights != null && result.Highlights.Any(x => x.Key == "Description"))
+                        {
+                            var hl = result.Highlights.FirstOrDefault(x => x.Key == "Description");
+                            foreach (var h in hl.Value.Highlights)
+                            {
+                                WriteLiteral(h + "...");
+                            }
+                        }
+
+                    </td>
+
+                    <td>@result.Source.Author</td>
+                </tr>
+
+            }
+            @if (!Model.Results.Any())
+            {
+                <tr>
+                    <td colspan="4" class="alert alert-danger" style="text-align:center;">Not results found :(</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+    <h4><span class="label label-default">@Model.Results.Count()</span> results found in @Model.Elapsed millisecond</h4>
+}
